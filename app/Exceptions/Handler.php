@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -32,6 +33,14 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof ModelNotFoundException) {
+            $ex = new UserNotFoundException();
+            return $ex->message($exception->getIds()[0]);
+        }   
+        return parent::render($request, $exception);
+    }
     public function register()
     {
         $this->reportable(function (Throwable $e) {
