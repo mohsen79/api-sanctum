@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +30,10 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $user = User::whereEmail($request->email)->first();
+        if (!$user) {
+            throw new ModelNotFoundException('you do not have an account,please register');
+        }
         $request->validate(
             [
                 'email' => 'required|email',

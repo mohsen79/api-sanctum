@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Models\Post;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -36,9 +37,17 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            $ex = new UserNotFoundException();
-            return $ex->message($exception->getIds()[0]);
-        }   
+            switch ($exception->getModel()) {
+                case 'App\Models\User':
+                    $ex = new UserNotFoundException();
+                    return $ex->message($exception->getIds()[0]);
+                    break;
+                case 'App\Models\Post':
+                    $ex = new PostNotFoundException();
+                    return $ex->message($exception->getIds()[0]);
+                    break;
+            }
+        }
         return parent::render($request, $exception);
     }
     public function register()

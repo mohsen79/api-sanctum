@@ -54,7 +54,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        // ^ for this action UserException registered
+        // ^ for model binding UserNotFoundException registered
         return response()->json(new UserResourece($user), 200);
     }
 
@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // ^ for this action UserException registered
+        // ^ for model binding UserNotFoundException registered
         if ($request->password) {
             $data = $request->validate([
                 'name' => 'required|min:3|max:30',
@@ -93,8 +93,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //TODO :make sure if the user in the owner of accoutn or is an admin
-        // ^ for this action UserException registered
+        //TODO :make sure if the user in the owner of account or is an admin
+        // ^ for model binding UserNotFoundException registered
         $user->tokens()->delete();
         $user->delete();
         return response()->json(['message' => 'the user number ' . $user->id . ' deleted'], 200);
