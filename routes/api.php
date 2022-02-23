@@ -22,6 +22,8 @@ Route::prefix('v1')->group(function () {
     Route::get('search/user', [IndexController::class, 'searchUser']);
     Route::get('user/{user}/posts', [IndexController::class, 'userPost']);
     Route::get('search/posts/popular', [IndexController::class, 'searchByLike']);
+    Route::get('user/{user}/following', [IndexController::class, 'following']);
+    Route::get('user/{user}/followers', [IndexController::class, 'followers']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::apiResource('users', UserController::class);
@@ -31,6 +33,7 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('post/{post}/like', [IndexController::class, 'likePost']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('follow/user/{user}', [IndexController::class, 'follow']);
     Route::apiResource('users', UserController::class)->only(['store', 'update', 'destroy']);
     Route::apiResource('posts', PostController::class)->only(['store', 'update', 'destory']);
 });
