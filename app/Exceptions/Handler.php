@@ -46,6 +46,10 @@ class Handler extends ExceptionHandler
                     $ex = new PostNotFoundException();
                     return $ex->message($exception->getIds()[0]);
                     break;
+                case 'App\Models\Comment':
+                    $ex = new CommentNotFoundException();
+                    return $ex->message($exception->getIds()[0]);
+                    break;
             }
         }
         return parent::render($request, $exception);

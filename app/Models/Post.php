@@ -9,9 +9,25 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image','user_id'];
+    protected $fillable = ['image', 'user_id'];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function bookmarked()
+    {
+        return $this->belongsToMany(User::class, 'bookmarks');
     }
 }

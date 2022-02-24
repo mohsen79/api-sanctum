@@ -25,7 +25,7 @@ class IndexController extends Controller
 
     public function likePost(Post $post)
     {
-        //todo check user only can like the post once
+        //todo check user only can like the post once & seperate the like by making another table
         // ^ for model binding PostNotFoundException registered
         $post->update(['like' => $post->like++]);
         return response()->json(['message' => 'post liked']);
