@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\v1\CommentController;
 use App\Http\Controllers\Api\v1\IndexController;
 use App\Http\Controllers\Api\v1\PostController;
 use App\Http\Controllers\Api\v1\UserController;
+use App\Http\Controllers\Api\v1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,12 +29,18 @@ Route::prefix('v1')->group(function () {
     Route::get('user/{user}/followers', [IndexController::class, 'followers']);
     Route::get('user/{user}/comments', [CommentController::class, 'userComments']);
     Route::get('post/{post}/comments', [CommentController::class, 'postComments']);
+    Route::get('tag/{tag}/posts', [TagController::class, 'tagPosts']);
+    Route::get('post/{post}/tags', [TagController::class, 'postTags']);
+    Route::get('search/posts/tags', [TagController::class, 'searchPostByTags']);
+    Route::get('tags', [TagController::class, 'tags']);
+    Route::get('popular/tags', [TagController::class, 'popularTags']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::apiResource('users', UserController::class);
     Route::apiResource('posts', PostController::class);
 });
 
+//protected routes
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('user/search/bookmarks', [BookmarkController::class, 'searchBookmarks']);
     Route::post('post/{post}/bookmark', [BookmarkController::class, 'bookmark']);
@@ -44,6 +51,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('follow/user/{user}', [IndexController::class, 'follow']);
     Route::post('post/{post}/comment', [CommentController::class, 'comment']);
     Route::post('comment/{comment}', [CommentController::class, 'likeComment']);
+    Route::post('tag/create', [TagController::class, 'createTag']);
+    Route::delete('tag/{tag}/delete/post', [TagController::class, 'deletePostByTag']);
     Route::apiResource('users', UserController::class)->only(['store', 'update', 'destroy']);
     Route::apiResource('posts', PostController::class)->only(['store', 'update', 'destory']);
 });

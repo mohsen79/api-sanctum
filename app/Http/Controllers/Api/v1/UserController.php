@@ -93,7 +93,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //TODO :make sure if the user in the owner of account or is an admin
+        //TODO make sure if the user in the owner of account or is an admin
         // ^ for model binding UserNotFoundException registered
         $user->tokens()->delete();
         $user->delete();

@@ -72,7 +72,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //TODO :make sure if the user in the owner of account or is an admin
+        //TODO make sure if the user in the owner of account or is an admin
         // ^ for model binding PostNotFoundException registered
         $post->delete();
         return response()->json(['message' => 'post deleted'], 200);

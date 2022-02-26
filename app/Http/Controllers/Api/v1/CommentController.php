@@ -36,7 +36,7 @@ class CommentController extends Controller
 
     public function likeComment(Comment $comment)
     {
-        //todo user can only like once & exception
+        //todo user can only like once
         if ($comment->likes()->count()) {
             foreach ($comment->likes as $com) {
                 $comment->likes()->update(['like' => $com->like + 1]);
