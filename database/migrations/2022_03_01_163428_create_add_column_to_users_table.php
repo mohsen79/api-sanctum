@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('likes', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->morphs('likeable');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('admin')->default(0)->after('email');
         });
     }
 
@@ -27,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('likes');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('admin');
+        });
     }
 };

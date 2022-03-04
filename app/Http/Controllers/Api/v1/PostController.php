@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PostController extends Controller
@@ -55,8 +56,8 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //todo authorization for user(owner of the post)
         // ^ for model binding PostNotFoundException registered
+        abort_if($request->user()->cannot('owner', $post), 403, 'you are not the owner of the post');
         $data = $request->validate([
             'image' => 'required|min:10|string'
         ]);
@@ -72,9 +73,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //TODO make sure if the user in the owner of account or is an admin
         // ^ for model binding PostNotFoundException registered
-        $post->delete();
-        return response()->json(['message' => 'post deleted'], 200);
+        if (Gate::any(['owner', 'admin'], $post)) {
+            $post->delete();
+            return response()->json(['message' => 'post deleted'], 200);
+        }
+        return response()->json(['error' => 'you are not owner of the post'], 403);
     }
 }

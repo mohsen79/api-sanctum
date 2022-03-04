@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Like extends Model
+class Dislike extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['user_id', 'likeable_id', 'likeable_type'];
+    protected $fillable = ['user_id', 'dislikeable_id', 'dislikeable_type'];
 
     public function user()
     {
@@ -20,7 +19,6 @@ class Like extends Model
     {
         return $this->morphTo(Post::class);
     }
-
     public function comment()
     {
         return $this->morphTo(Comment::class);

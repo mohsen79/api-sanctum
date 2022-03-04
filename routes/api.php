@@ -34,6 +34,10 @@ Route::prefix('v1')->group(function () {
     Route::get('search/posts/tags', [TagController::class, 'searchPostByTags']);
     Route::get('tags', [TagController::class, 'tags']);
     Route::get('popular/tags', [TagController::class, 'popularTags']);
+    Route::get('post/{post}/liked/users', [IndexController::class, 'usersLikedPost']);
+    Route::get('post/{post}/disliked/users', [IndexController::class, 'usersDisLikedPost']);
+    Route::get('comment/{comment}/liked/users', [CommentController::class, 'usersLikedComment']);
+    Route::get('comment/{comment}/disliked/users', [CommentController::class, 'usersDisLikedComment']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::apiResource('users', UserController::class);
@@ -47,12 +51,14 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('user/{user}/bookmarks', [BookmarkController::class, 'bookmarks']);
     Route::get('post/{post}/bookmarked', [BookmarkController::class, 'bookmarked']);
     Route::post('post/{post}/like', [IndexController::class, 'likePost']);
+    Route::post('post/{post}/dislike', [IndexController::class, 'DisLikePost']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('follow/user/{user}', [IndexController::class, 'follow']);
     Route::post('post/{post}/comment', [CommentController::class, 'comment']);
-    Route::post('comment/{comment}', [CommentController::class, 'likeComment']);
+    Route::post('comment/{comment}/like', [CommentController::class, 'likeComment']);
+    Route::post('comment/{comment}/dislike', [CommentController::class, 'Dislikecomment']);
     Route::post('tag/create', [TagController::class, 'createTag']);
     Route::delete('tag/{tag}/delete/post', [TagController::class, 'deletePostByTag']);
     Route::apiResource('users', UserController::class)->only(['store', 'update', 'destroy']);
-    Route::apiResource('posts', PostController::class)->only(['store', 'update', 'destory']);
+    Route::apiResource('posts', PostController::class)->only(['store', 'update', 'destroy']);
 });

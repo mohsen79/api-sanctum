@@ -44,6 +44,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function isAdmin()
+    {
+        return $this->admin;
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -72,5 +77,10 @@ class User extends Authenticatable
     public function bookmarks()
     {
         return $this->belongsToMany(Post::class, 'bookmarks');
+    }
+
+    public function dislikes()
+    {
+        return $this->hasMany(Dislike::class);
     }
 }

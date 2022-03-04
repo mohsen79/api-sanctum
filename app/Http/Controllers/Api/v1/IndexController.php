@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResourece;
+use App\Models\Dislike;
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Exists;
 
 class IndexController extends Controller
 {
@@ -25,26 +28,80 @@ class IndexController extends Controller
 
     public function likePost(Post $post)
     {
-        //todo check user only can like the post once & seperate the like by making another table
         // ^ for model binding PostNotFoundException registered
-        $post->update(['like' => $post->like++]);
-        return response()->json(['message' => 'post liked']);
+        if (auth()->user()->likes->where('likeable_type', get_class($post))
+            ->where('likeable_id', $post->id)->count()
+        ) {
+            foreach (auth()->user()->likes->where('likeable_type', get_class($post))
+                ->where('likeable_id', $post->id) as $like) {
+                $like->delete();
+            }
+            return response()->json(['message' => 'post unliked'], 200);
+        } else {
+            auth()->user()->likes()->create([
+                'likeable_id' => $post->id,
+                'likeable_type' => get_class($post)
+            ]);
+            return response()->json(['message' => 'post ' . $post->id . ' liked'], 200);
+        }
+    }
+
+    public function usersLikedPost(Post $post)
+    {
+        // ^ for model binding PostNotFoundException registered
+        $likes = Like::all();
+        $users = [];
+        foreach ($likes->where('likeable_id', $post->id)->where('likeable_type', get_class($post)) as $like) {
+            $users[] = $like->user;
+        }
+        return response()->json(['these users liked this post' => $users], 200);
+    }
+
+    public function disLikePost(Post $post)
+    {
+        // ^ for model binding PostNotFoundException registered
+        if (auth()->user()->dislikes->where('dislikeable_type', get_class($post))
+            ->where('dislikeable_id', $post->id)->count()
+        ) {
+            foreach (auth()->user()->dislikes->where('dislikeable_id', $post->id)
+                ->where('dislikeable_type', get_class($post)) as $dislike) {
+                $dislike->delete();
+            }
+            return response()->json(['message' => 'post undsiliked'], 403);
+        } else {
+            auth()->user()->dislikes()->create([
+                'dislikeable_id' => $post->id,
+                'dislikeable_type' => get_class($post)
+            ]);
+            return response()->json(['message' => 'post ' . $post->id . ' disliked'], 200);
+        }
+    }
+
+    public function usersDisLikedPost(Post $post)
+    {
+        // ^ for model binding PostNotFoundException registered
+        $dislikes = Dislike::all();
+        $users = [];
+        foreach ($dislikes->where('dislikeable_id', $post->id)->where('dislikeable_type', get_class($post)) as $dislike) {
+            $users[] = $dislike->user;
+        }
+        return response()->json(['these users disliked this post' => $users], 200);
     }
 
     public function searchByLike(Request $request)
     {
+        //todo refactor search by like feature
         $posts = Post::where('image', 'like', "%{$request->image}%")->orderBy('like', 'desc')->get();
         return response()->json(['posts' => $posts], 200);
     }
 
     public function follow(User $user)
     {
-        //todo delete timestamps from follow table
         // ^ for model binding UserNotFoundException registered
         //if authenticated user followed someone it'll unfollow that otherwise it'll follow the user
         abort_if(auth()->user()->id == $user->id, 403, 'you can not follow youself');
         return response()->json(['follow' => auth()->user()->following()->toggle([
-            'profile_id' => $user->profile->id
+            'profile_id' => $user->profile->id,
         ])], 200);
     }
 

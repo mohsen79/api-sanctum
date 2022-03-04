@@ -13,6 +13,11 @@ use Nette\Utils\Json;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('isAdmin')->only(['destroy', 'store']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -41,8 +46,9 @@ class UserController extends Controller
         );
         $data["password"] = Hash::make($data["password"]);
         $user = User::create($data);
+        $user->markEmailAsVerified();
         $token = $user->createToken('user-token')->plainTextToken;
-        $message = ['message' => 'you have registerd', 'token' => $token];
+        $message = ['message' => 'you have registerd new user', 'token' => $token];
         return response()->json($message, 201);
     }
 
@@ -67,6 +73,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        //todo the owner can update
         // ^ for model binding UserNotFoundException registered
         if ($request->password) {
             $data = $request->validate([
@@ -93,7 +100,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //TODO make sure if the user in the owner of account or is an admin
         // ^ for model binding UserNotFoundException registered
         $user->tokens()->delete();
         $user->delete();
