@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Exists;
 
 class IndexController extends Controller
@@ -90,9 +91,19 @@ class IndexController extends Controller
 
     public function searchByLike(Request $request)
     {
-        //todo refactor search by like feature
-        $posts = Post::where('image', 'like', "%{$request->image}%")->orderBy('like', 'desc')->get();
-        return response()->json(['posts' => $posts], 200);
+        $posts = Post::where('image', 'like', "%{$request->image}%")->get();
+        $likes = DB::table('likes')->selectRaw('count(*) as like_count,likeable_id')
+            ->groupBy('likeable_id')
+            ->where('likeable_type', 'App\Models\Post')
+            ->orderBy('like_count', 'desc')->get();
+        $popularPosts = array();
+        foreach ($likes as $like) {
+            foreach ($posts->where('id', $like->likeable_id) as $post) {
+                $post["likes"] = $like->like_count;
+                $popularPosts[] = $post;
+            }
+        }
+        return response()->json(['popular posts' => $popularPosts], 200);
     }
 
     public function follow(User $user)
